@@ -7,18 +7,27 @@ export default function Squares() {
 
   const [squares, setSquares] = useState(INITIAL_SQUARES);
 
-  const handlePlay = (index) => () => {
-    console.log(`play game #${index}`);
+  const playGame = (index) => {
+    setSquares((prevSquares) => {
+      const nextSquares = prevSquares.map((square, squareIndex) => {
+        if (squareIndex === index) {
+          return currentPlayer;
+        }
+        return square;
+      })
+      return nextSquares;
+    })
   }
 
   const gameIndex = squares.filter(Boolean).length%PLAYER_COUNT;
 
-  const currentPlayer = gameIndex === 0 ? PLAYER.ONE : PLAYER.TWO;
+  const isPlayerOneTurn = gameIndex % PLAYER_COUNT === 0;
+  const currentPlayer = isPlayerOneTurn ? PLAYER.ONE : PLAYER.TWO;
 
   return (
     <div className={S.component}>
       {squares.map((square, index) => {
-        return (<Square key={index} onPlay={handlePlay(index)}>{square}</Square>)
+        return (<Square key={index} onPlay={()=>playGame(index)}>{square}</Square>)
       })}
     </div>
   );
