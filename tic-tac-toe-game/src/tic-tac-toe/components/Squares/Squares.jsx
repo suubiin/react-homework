@@ -1,32 +1,23 @@
-import { checkWinner, INITIAL_SQUARES, PLAYER, PLAYER_COUNT, WINNERS_COLOR } from "@/tic-tac-toe/constants";
+import { PLAYER_LIST, WINNERS_COLOR } from "@/tic-tac-toe/constants";
 import Square from "../Square/Square";
 import S from "./Squares.module.css";
-import { useState } from "react";
+import { arrayOf, func, number, oneOf, shape } from 'prop-types';
 
-export default function Squares() {
-  const [squares, setSquares] = useState(INITIAL_SQUARES);
+const OneOfPlayerType = oneOf(PLAYER_LIST);
+const OneOfPlayerListType = arrayOf(OneOfPlayerType);
+const WinnerInfoType = shape({
+  winner: OneOfPlayerType,
+  condition: arrayOf(number),
+});
 
-  const handlePlayGame = (index) => () => {
-    if (winnerInfo) {
-      alert('GAME OVER');
-      return;
-    }
+Squares.propTypes = {
+  squares: OneOfPlayerListType.isRequired,
+  winnerInfo: WinnerInfoType,
+  onPlay: func,
+};
 
-    setSquares((prevSquares) => {
-      const nextSquares = prevSquares.map((square, idx) => {
-        return idx === index ? currentPlayer : square;
-      });
-      return nextSquares;
-    });
-  };
 
-  const winnerInfo = checkWinner(squares);
-  
-  const gameIndex = squares.filter(Boolean).length % PLAYER_COUNT;
-
-  const isPlayerOneTurn = gameIndex % PLAYER_COUNT === 0;
-  const currentPlayer = isPlayerOneTurn ? PLAYER.ONE : PLAYER.TWO;
-
+export default function Squares({squares, winnerInfo, onPlay}) {
   return (
     <div className={S.component}>
       {squares.map((square, index) => {
@@ -43,7 +34,7 @@ export default function Squares() {
         };
         
         return (
-          <Square key={index} style={winnerStyles} onPlay={handlePlayGame(index)}>
+          <Square key={index} style={winnerStyles} onPlay={onPlay(index)}>
             {square}
           </Square>
         );
